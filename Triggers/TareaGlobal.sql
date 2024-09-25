@@ -1,17 +1,31 @@
-DELIMITER //
+DELIMITER $$
 
-CREATE TRIGGER eliminar_proyecto_asociado
-BEFORE DELETE ON proyecto
+CREATE TRIGGER after_tareaglobal_delete
+AFTER DELETE ON proyecto
 FOR EACH ROW
 BEGIN
-    -- Eliminar las tareas unitarias asociadas al proyecto eliminado
-    DELETE FROM tareaunitaria
-    WHERE grupo = OLD.idProyecto;
+    -- Eliminar las tareas grupales asociadas al proyecto
+    DELETE FROM TareaGrupal
+    WHERE idProyecto = OLD.idProyecto;
 
-    -- Desvincular a los usuarios añadidos al proyecto eliminado
-    DELETE FROM grupohasusuario
-    WHERE Grupo_Proyecto = OLD.idProyecto;
-END;
-//
+    -- Eliminar las tareas unitarias asociadas a los grupos de tareas eliminados
+    DELETE tu FROM TareaUnitaria tu
+    INNER JOIN TareaGrupal tg ON tu.grupo = tg.idGrupo
+    WHERE tg.idProyecto = OLD.idProyecto;
+END$$
 
 DELIMITER ;
+
+DELIMITER $$
+
+CREATE TRIGGER after_tareaglobal_delete_unlink_users
+AFTER DELETE ON proyecto
+FOR EACH ROW
+BEGIN
+    -- Desvincular a los usuarios asociados al proyecto eliminado
+    DELETE FROM TareaGrupal_has_Usuario
+    WHERE proyecto = OLD.idProyecto;
+END$$
+
+DELIMITER ;
+

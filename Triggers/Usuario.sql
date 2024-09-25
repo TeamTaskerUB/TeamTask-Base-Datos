@@ -1,19 +1,18 @@
-DELIMITER //
 
-CREATE TRIGGER desvincular_usuario
-BEFORE DELETE ON usuario
+DELIMITER $$
+
+CREATE TRIGGER after_usuario_delete
+AFTER DELETE ON Usuario
 FOR EACH ROW
 BEGIN
-    -- Actualizar las tareas del usuario eliminado a pendientes de asignación
-    UPDATE tareaunitaria
+    -- Desvincular al usuario de los proyectos en los que estaba
+    DELETE FROM TareaGrupal_has_Usuario
+    WHERE usuario = OLD.idUsuario;
+    
+    -- Las tareas unitarias asociadas a este usuario deben quedar sin asignar (usuario NULL)
+    UPDATE TareaUnitaria
     SET usuario = NULL
     WHERE usuario = OLD.idUsuario;
-
-    -- Desvincular al usuario de los proyectos
-    DELETE FROM grupohasusuario
-    WHERE usuario = OLD.idUsuario;
-END;
-
-//
+END$$
 
 DELIMITER ;
