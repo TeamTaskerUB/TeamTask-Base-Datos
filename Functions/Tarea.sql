@@ -83,3 +83,29 @@ END //
 
 DELIMITER ;
 
+DELIMITER //
+
+CREATE FUNCTION get_count_tarea_completed_proyecto_usuario(
+    idUsuario INT,
+    fechaIni DATE,
+    fechaEnd DATE,
+    idTareaGlobal INT
+)
+RETURNS INT
+DETERMINISTIC
+BEGIN
+    DECLARE cuenta INT;
+
+    SELECT COUNT(*) INTO cuenta
+    FROM TareaUnitaria
+    WHERE usuario = idUsuario
+    AND idTareaGlobal = idTareaGlobal
+    AND dateIn >= fechaIni
+    AND dateEnd <= fechaEnd
+    AND completada = 1;
+
+    RETURN cuenta;
+END //
+
+DELIMITER ;
+
