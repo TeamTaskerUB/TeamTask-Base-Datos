@@ -22,3 +22,17 @@ BEGIN
 END //
 
 DELIMITER ;
+
+DELIMITER //
+
+CREATE PROCEDURE get_usuario_proyecto(IN idUsuario INT)
+BEGIN
+    SELECT tg.idProyecto, tg.nombre_proyecto, tg.descripcion, tg.dateIn, tg.dateEnd, tg.progreso, tg.duracion
+    FROM TareaGlobal tg
+    JOIN TareaGrupal_has_Usuario tgu ON tg.idProyecto = tgu.proyecto
+    JOIN Usuario u ON u.idUsuario = tgu.usuario
+    WHERE u.idUsuario = idUsuario;
+END //
+
+DELIMITER ;
+
