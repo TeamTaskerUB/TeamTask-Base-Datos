@@ -10,4 +10,15 @@ BEGIN
 END //
 
 DELIMITER ;
-call get_usuarios_grupo_proyecto(98);
+
+DELIMITER //
+
+CREATE PROCEDURE get_adminsGrupo_grupo_proyecto(IN idTareaGrupal INT)
+BEGIN
+    SELECT tg.admin, u.nombre, u.apellido, u.mail
+    FROM TareaGrupal tg
+    JOIN Usuario u ON tg.admin = u.idUsuario
+    WHERE tg.idGrupo = idTareaGrupal;
+END //
+
+DELIMITER ;
