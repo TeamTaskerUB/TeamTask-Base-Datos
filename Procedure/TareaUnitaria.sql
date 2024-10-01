@@ -103,6 +103,47 @@ END$$
 
 DELIMITER ;
 
+DELIMITER $$
 
+CREATE PROCEDURE get_tarea_prioridad_grupo_proyecto (
+    IN p_idTareaGlobal INT,
+    IN p_prioridad VARCHAR(60)
+)
+BEGIN
+    -- Declare variables
+    DECLARE errorMsg VARCHAR(255) DEFAULT '';
+    DECLARE tasks_found INT DEFAULT 0;
+    DECLARE priority_id INT;
+
+    -- Get the priority ID based on the provided priority text
+    SELECT idPrioridad
+    INTO priority_id
+    FROM Prioridad
+    WHERE tipo = p_prioridad;
+
+    -- Check if any task exists with the specified priority in the project
+    SELECT COUNT(*)
+    INTO tasks_found
+    FROM TareaUnitaria tu
+    JOIN TareaGrupal tg ON tu.grupo = tg.idGrupo
+    WHERE tg.idProyecto = p_idTareaGlobal
+      AND tu.prioridad = priority_id;
+
+    -- If no tasks are found, return an error message
+    IF tasks_found = 0 THEN
+        SET errorMsg = 'No se encontraron tareas con la prioridad especificada en el proyecto.';
+        SELECT errorMsg AS error;
+    ELSE
+        -- Return the tasks with the specified priority in the project
+        SELECT tu.idTareaUnitaria, tu.nombre, tu.dateIn, tu.dateEnd, tu.progreso, tu.duracion, tu.hito, tu.etiqueta, p.tipo AS Prioridad
+        FROM TareaUnitaria tu
+        JOIN TareaGrupal tg ON tu.grupo = tg.idGrupo
+        JOIN Prioridad p ON tu.prioridad = p.idPrioridad
+        WHERE tg.idProyecto = p_idTareaGlobal
+          AND tu.prioridad = priority_id;
+    END IF;
+END$$
+
+DELIMITER ;
 
 
