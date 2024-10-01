@@ -68,6 +68,41 @@ END $$
 
 DELIMITER ;
 
+DELIMITER $$
+
+CREATE PROCEDURE get_tareas_proyecto_usuario (
+    IN p_idUsuario INT,
+    IN p_idTareaGlobal INT
+)
+BEGIN
+    -- Declare variables
+    DECLARE errorMsg VARCHAR(255) DEFAULT '';
+    DECLARE tasks_found INT DEFAULT 0;
+
+    -- Check if there are tasks assigned to the user in the project
+    SELECT COUNT(*)
+    INTO tasks_found
+    FROM TareaUnitaria tu
+    JOIN TareaGrupal tg ON tu.grupo = tg.idGrupo
+    WHERE tu.usuario = p_idUsuario
+      AND tg.idProyecto = p_idTareaGlobal;
+
+    -- If no tasks are found, return an error
+    IF tasks_found = 0 THEN
+        SET errorMsg = 'No se encontraron tareas para el usuario en el proyecto especificado.';
+        SELECT errorMsg AS error;
+    ELSE
+        -- Return the tasks assigned to the user in the project
+        SELECT tu.idTareaUnitaria, tu.nombre, tu.dateIn, tu.dateEnd, tu.progreso, tu.duracion, tu.hito, tu.etiqueta, tu.prioridad
+        FROM TareaUnitaria tu
+        JOIN TareaGrupal tg ON tu.grupo = tg.idGrupo
+        WHERE tu.usuario = p_idUsuario
+          AND tg.idProyecto = p_idTareaGlobal;
+    END IF;
+END$$
+
+DELIMITER ;
+
 
 
 
