@@ -85,6 +85,8 @@ DELIMITER ;
 
 DELIMITER //
 
+DELIMITER //
+
 CREATE FUNCTION get_count_tarea_completed_proyecto_usuario(
     idUsuario INT,
     fechaIni DATE,
@@ -96,13 +98,14 @@ DETERMINISTIC
 BEGIN
     DECLARE cuenta INT;
 
+    -- Contar las tareas donde el progreso es 100 (tareas completadas)
     SELECT COUNT(*) INTO cuenta
     FROM TareaUnitaria
     WHERE usuario = idUsuario
     AND idTareaGlobal = idTareaGlobal
     AND dateIn >= fechaIni
     AND dateEnd <= fechaEnd
-    AND completada = 1;
+    AND progreso = 100;  -- Progreso de 100 marca la tarea como completada
 
     RETURN cuenta;
 END //
