@@ -14,4 +14,16 @@ END//
 
 DELIMITER ;
 
+DELIMITER $$
 
+CREATE TRIGGER desvincular_tarea
+AFTER DELETE ON `TareaUnitaria` FOR EACH ROW
+BEGIN
+  
+  DELETE FROM `Grupo_has_Usuario`
+  WHERE `usuario` = OLD.usuario 
+    AND `grupo` = OLD.grupo 
+    AND `Grupo_Proyecto` = (SELECT `proyecto` FROM `Grupo` WHERE `idGrupo` = OLD.grupo);
+END $$
+
+DELIMITER ;
