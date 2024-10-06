@@ -146,4 +146,46 @@ END$$
 
 DELIMITER ;
 
+DELIMITER //
+
+CREATE PROCEDURE get_usuario_tarea_workload_proyectos(
+    IN project_id INT,
+    IN start_date DATETIME,
+    IN end_date DATETIME
+)
+BEGIN
+    -- Variable para controlar errores
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        -- Retornar mensaje de error en caso de excepción
+        SELECT 'Error' AS Error;
+    END;
+
+    -- Consulta para obtener usuarios con más de 3 tareas en el rango de fechas dado
+    SELECT
+        u.idUsuario,
+        u.nombre,
+        u.apellido,
+        COUNT(tu.idTareaUnitaria) AS total_tareas
+    FROM
+        Usuario u
+    JOIN
+        TareaUnitaria tu ON u.idUsuario = tu.usuario
+    JOIN
+        TareaGrupal tg ON tu.grupo = tg.idGrupo
+    WHERE
+        tg.idProyecto = project_id
+        AND tu.dateIn BETWEEN start_date AND end_date
+        AND tu.dateEnd BETWEEN start_date AND end_date
+    GROUP BY
+        u.idUsuario
+    HAVING
+        COUNT(tu.idTareaUnitaria) > 3;
+
+END //
+
+DELIMITER ;
+
+
+
 
