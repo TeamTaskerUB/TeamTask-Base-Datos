@@ -1,8 +1,8 @@
 SET GLOBAL log_bin_trust_function_creators = 1;
 
-DROP FUNCTION IF EXISTS teamtasker.set_grupo_proyecto_usuario;
+DROP FUNCTION IF EXISTS teamtasker.set_usuario_join_proyecto;
 DELIMITER //
-CREATE FUNCTION teamtasker.set_grupo_proyecto_usuario (idTareaGlobal INT, idUsuario INT)
+CREATE FUNCTION teamtasker.set_usuario_join_proyecto (idTareaGlobal INT, idUsuario INT)
 RETURNS TINYINT
 BEGIN
 	DECLARE check_id INT;
