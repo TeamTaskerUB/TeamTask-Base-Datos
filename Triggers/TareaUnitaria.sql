@@ -39,3 +39,23 @@ BEGIN
 END//
 
 DELIMITER ;
+
+DELIMITER //
+
+CREATE TRIGGER Validar_Fecha_Tarea
+BEFORE INSERT ON TareaUnitaria
+FOR EACH ROW
+BEGIN
+    DECLARE proyecto_dateEnd DATETIME;
+
+    SELECT dateEnd INTO proyecto_dateEnd
+    FROM TareaGlobal
+    WHERE idProyecto = (SELECT idProyecto FROM TareaGrupal WHERE idGrupo = NEW.grupo);
+
+    IF NEW.dateIn > proyecto_dateEnd OR NEW.dateEnd > proyecto_dateEnd THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'La tarea excede la fecha de finalización del proyecto';
+    END IF;
+END//
+
+DELIMITER ;
