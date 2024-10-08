@@ -2,7 +2,7 @@ DELIMITER //
 
 CREATE FUNCTION delete_perfil_usuario(
     idUsuario INT,
-    perfil VARCHAR(100)
+    idPerfil INT -- Cambiado de perfil a idPerfil
 )
 RETURNS VARCHAR(100)
 DETERMINISTIC
@@ -13,11 +13,11 @@ BEGIN
     IF EXISTS (SELECT 1 
                FROM Usuario_has_Perfil 
                WHERE idUsuario = idUsuario 
-               AND nombre = perfil) THEN
+               AND idPerfil = idPerfil) THEN
         -- Eliminamos el perfil asignado al usuario
         DELETE FROM Usuario_has_Perfil
         WHERE idUsuario = idUsuario
-        AND nombre = perfil;
+        AND idPerfil = idPerfil; -- Cambiado a idPerfil
 
         SET resultado = 'El perfil ha sido removido exitosamente del usuario.';
     ELSE
