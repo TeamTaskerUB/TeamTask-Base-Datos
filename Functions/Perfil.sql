@@ -2,11 +2,7 @@ DELIMITER //
 
 CREATE FUNCTION delete_perfil_usuario(
     idUsuario INT,
-<<<<<<< Updated upstream
-    idPerfil INT -- Cambiado de perfil a idPerfil
-=======
     perfil VARCHAR(100) -- Cambiado a perfil
->>>>>>> Stashed changes
 )
 RETURNS VARCHAR(100)
 DETERMINISTIC
@@ -28,11 +24,7 @@ BEGIN
         -- Eliminamos el perfil asignado al usuario
         DELETE FROM Usuario_has_Perfil
         WHERE idUsuario = idUsuario
-<<<<<<< Updated upstream
-        AND idPerfil = idPerfil; -- Cambiado a idPerfil
-=======
         AND idPerfil = idPerfil;
->>>>>>> Stashed changes
 
         SET resultado = 'El perfil ha sido removido exitosamente del usuario.';
     ELSE
@@ -49,11 +41,7 @@ DELIMITER //
 
 CREATE FUNCTION set_perfil_usuario(
     idUsuario INT,
-<<<<<<< Updated upstream
-    idPerfil INT -- Cambiado de perfilAsignado a idPerfil
-=======
     perfilAsignado VARCHAR(100) -- Cambiado a perfilAsignado
->>>>>>> Stashed changes
 )
 RETURNS VARCHAR(100)
 DETERMINISTIC
@@ -76,11 +64,7 @@ BEGIN
         SET resultado = 'Error: El perfil ya está asignado al usuario.';
     ELSE
         -- Si el perfil no está asignado, lo insertamos en la tabla Usuario_has_Perfil
-<<<<<<< Updated upstream
-        INSERT INTO Usuario_has_Perfil (idUsuario, idPerfil) -- Cambiado a idPerfil
-=======
         INSERT INTO Usuario_has_Perfil (idUsuario, idPerfil)
->>>>>>> Stashed changes
         VALUES (idUsuario, idPerfil);
 
         SET resultado = 'El perfil ha sido asignado exitosamente al usuario.';
@@ -88,11 +72,6 @@ BEGIN
 
     RETURN resultado;
 END //
-<<<<<<< Updated upstream
 
 DELIMITER ;
-=======
-DELIMITER ;
 
-
->>>>>>> Stashed changes
