@@ -34,7 +34,7 @@ DELIMITER //
 
 CREATE FUNCTION set_perfil_usuario(
     idUsuario INT,
-    perfilAsignado VARCHAR(100)
+    idPerfil INT -- Cambiado de perfilAsignado a idPerfil
 )
 RETURNS VARCHAR(100)
 DETERMINISTIC
@@ -45,13 +45,13 @@ BEGIN
     IF EXISTS (SELECT 1 
                FROM Usuario_has_Perfil 
                WHERE idUsuario = idUsuario 
-               AND nombre = perfilAsignado) THEN
+               AND idPerfil = idPerfil) THEN
         -- Si el perfil ya está asignado, devolvemos un mensaje
         SET resultado = 'Error: El perfil ya está asignado al usuario.';
     ELSE
         -- Si el perfil no está asignado, lo insertamos en la tabla Usuario_has_Perfil
-        INSERT INTO Usuario_has_Perfil (idUsuario, nombre)
-        VALUES (idUsuario, perfilAsignado);
+        INSERT INTO Usuario_has_Perfil (idUsuario, idPerfil) -- Cambiado a idPerfil
+        VALUES (idUsuario, idPerfil);
 
         SET resultado = 'El perfil ha sido asignado exitosamente al usuario.';
     END IF;
@@ -60,5 +60,3 @@ BEGIN
 END //
 
 DELIMITER ;
-
-
