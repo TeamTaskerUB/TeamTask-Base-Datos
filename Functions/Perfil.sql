@@ -1,4 +1,5 @@
 DELIMITER //
+
 CREATE FUNCTION delete_perfil_usuario(
     idUsuario INT,
     perfil VARCHAR(100)
@@ -9,11 +10,12 @@ BEGIN
     DECLARE resultado VARCHAR(100);
     DECLARE idPerfil INT;
 
-    -- Buscamos el idPerfil basado en el nombre del perfil
+    -- Buscamos el idPerfil basado en el nombre del perfil y el idUsuario
     SELECT p.idPerfil
     INTO idPerfil
     FROM Perfil p
-    WHERE p.nombre = perfil
+    JOIN Usuario_has_Perfil up ON p.idPerfil = up.idPerfil
+    WHERE p.nombre = perfil AND up.idUsuario = idUsuario
     LIMIT 1;
 
     -- Verificamos si el perfil asignado existe para ese usuario
@@ -39,6 +41,8 @@ DELIMITER ;
 
 DELIMITER //
 
+DELIMITER //
+
 CREATE FUNCTION set_perfil_usuario(
     idUsuario INT,
     perfilAsignado VARCHAR(100)
@@ -49,18 +53,13 @@ BEGIN
     DECLARE resultado VARCHAR(100);
     DECLARE idPerfil INT;
 
-    -- Buscamos el idPerfil basado en el nombre del perfilAsignado
+    -- Buscamos el idPerfil basado en el nombre del perfilAsignado y el idUsuario
     SELECT p.idPerfil
     INTO idPerfil
     FROM Perfil p
-    WHERE p.nombre = perfilAsignado
+    JOIN Usuario_has_Perfil up ON up.idPerfil = p.idPerfil
+    WHERE up.idUsuario = idUsuario AND p.nombre = perfilAsignado
     LIMIT 1;
-
-    -- Verificamos si se encontró un perfil con el nombre dado
-    IF idPerfil IS NULL THEN
-        SET resultado = 'Error: No se encontró el perfil especificado.';
-        RETURN resultado;
-    END IF;
 
     -- Verificamos si el perfil ya está asignado al usuario
     IF EXISTS (SELECT 1 
