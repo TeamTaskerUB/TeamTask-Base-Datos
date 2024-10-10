@@ -41,8 +41,6 @@ DELIMITER ;
 
 DELIMITER //
 
-DELIMITER //
-
 CREATE FUNCTION set_perfil_usuario(
     idUsuario INT,
     perfilAsignado VARCHAR(100)
