@@ -248,6 +248,8 @@ INSERT INTO Usuario (idUsuario, nombre, apellido, mail, contraseña)
 VALUES
 (1, 'Juan', 'Perez', 'juan.perez@example.com', '12345'),
 (2, 'Maria', 'Gonzalez', 'maria.gonzalez@example.com', '67890');
+INSERT INTO perfil (idPerfil, nombre) VALUES (NULL, "Analista"),(NULL, "Programador");
+SELECT * FROM usuario_has_perfil;
 INSERT INTO TareaGlobal (idProyecto, nombre_proyecto, descripcion, dateIn, dateEnd, progreso, duracion, admin_id)
 VALUES
 (1, 'Proyecto Alpha', 'Descripción del proyecto Alpha', '2024-09-01 08:00:00', '2024-12-01 17:00:00', 0.5, 90, 1);
@@ -272,6 +274,7 @@ VALUES
 (2, 'Tarea Unitaria A2', 1, 2, '2024-09-12 08:00:00', '2024-09-25 17:00:00', 0.4, 13, 0, 2, 1),
 (3, 'Tarea Unitaria B1', 2, 1, '2024-09-15 08:00:00', '2024-10-01 17:00:00', 0.3, 16, 1, 1, 1);
 
+use teamtasker;
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
