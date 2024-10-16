@@ -2,7 +2,7 @@ DELIMITER //
 
 CREATE FUNCTION delete_perfil_usuario(
     idUsuario INT,
-    perfil VARCHAR(100) -- Cambiado a perfil
+    perfil VARCHAR(100)
 )
 RETURNS VARCHAR(100)
 DETERMINISTIC
@@ -10,10 +10,12 @@ BEGIN
     DECLARE resultado VARCHAR(100);
     DECLARE idPerfil INT;
 
-    -- Buscamos el idPerfil correspondiente al nombre del perfil
-    SELECT idPerfil INTO idPerfil
-    FROM Perfil
-    WHERE nombre = perfil
+    -- Buscamos el idPerfil basado en el nombre del perfil y el idUsuario
+    SELECT p.idPerfil
+    INTO idPerfil
+    FROM Perfil p
+    JOIN Usuario_has_Perfil up ON p.idPerfil = up.idPerfil
+    WHERE p.nombre = perfil AND up.idUsuario = idUsuario
     LIMIT 1;
 
     -- Verificamos si el perfil asignado existe para ese usuario
@@ -41,7 +43,7 @@ DELIMITER //
 
 CREATE FUNCTION set_perfil_usuario(
     idUsuario INT,
-    perfilAsignado VARCHAR(100) -- Cambiado a perfilAsignado
+    perfilAsignado VARCHAR(100)
 )
 RETURNS VARCHAR(100)
 DETERMINISTIC
@@ -49,10 +51,12 @@ BEGIN
     DECLARE resultado VARCHAR(100);
     DECLARE idPerfil INT;
 
-    -- Buscamos el idPerfil correspondiente al nombre del perfil asignado
-    SELECT idPerfil INTO idPerfil
-    FROM Perfil
-    WHERE nombre = perfilAsignado
+    -- Buscamos el idPerfil basado en el nombre del perfilAsignado y el idUsuario
+    SELECT p.idPerfil
+    INTO idPerfil
+    FROM Perfil p
+    JOIN Usuario_has_Perfil up ON up.idPerfil = p.idPerfil
+    WHERE up.idUsuario = idUsuario AND p.nombre = perfilAsignado
     LIMIT 1;
 
     -- Verificamos si el perfil ya está asignado al usuario
@@ -74,4 +78,3 @@ BEGIN
 END //
 
 DELIMITER ;
-
