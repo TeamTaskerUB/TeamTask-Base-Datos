@@ -59,3 +59,20 @@ BEGIN
 END//
 
 DELIMITER ;
+
+DELIMITER //
+CREATE TRIGGER modificar_tareagrupal_usuario
+AFTER UPDATE ON TareaUnitaria 
+FOR EACH ROW
+BEGIN
+    
+    IF OLD.grupo = NEW.grupo THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'No se realizo ninguna modificacion';
+    END IF;
+    IF OLD.grupo != NEW.grupo THEN
+        -- Solamente si lo que cambia es el idGrupo se cambia en la TareaGrupal_has_Usuario
+        UPDATE tareaGrupal_has_usuario SET grupo = NEW.grupo WHERE usuario = OLD.usuario;
+    END IF;
+END //
+DELIMITER ;
