@@ -5,8 +5,10 @@ AFTER DELETE ON Etiqueta
 FOR EACH ROW
 BEGIN
     DELETE FROM TareaUnitaria
-    WHERE etiqueta = OLD.idEtiqueta
-    AND grupo IN (SELECT idGrupo FROM TareaGrupal WHERE idProyecto = OLD.idProyecto);
+    WHERE etiqueta = OLD.idEtiqueta;
+    
+    DELETE FROM TareaGrupal
+    WHERE etiqueta = OLD.idEtiqueta;
 END//
 
 DELIMITER ;
