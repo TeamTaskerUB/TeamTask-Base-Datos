@@ -1,17 +1,16 @@
 DELIMITER $$
 
 CREATE TRIGGER after_tareaglobal_delete
-AFTER DELETE ON proyecto
+AFTER DELETE ON TareaGlobal
 FOR EACH ROW
 BEGIN
-    -- Eliminar las tareas grupales asociadas al proyecto
+    
     DELETE FROM TareaGrupal
     WHERE idProyecto = OLD.idProyecto;
 
-    -- Eliminar las tareas unitarias asociadas a los grupos de tareas eliminados
+    
     DELETE tu FROM TareaUnitaria tu
-    INNER JOIN TareaGrupal tg ON tu.grupo = tg.idGrupo
-    WHERE tg.idProyecto = OLD.idProyecto;
+    WHERE tu.grupo IN (SELECT tg.idGrupo FROM TareaGrupal tg WHERE tg.idProyecto = OLD.idProyecto);
 END$$
 
 DELIMITER ;
