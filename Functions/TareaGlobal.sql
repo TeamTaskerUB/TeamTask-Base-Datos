@@ -154,16 +154,19 @@ BEGIN
     END IF;
     SET @check_id = -1;
     
-    DELETE FROM teamtasker.Usuario_has_TareaGlobal WHERE Usuario_has_TareaGlobal.Usuario_idUsuario = idUsuario AND Usuario_has_TareaGlobal.TareaGlobal_idProyecto = idTareaGlobal;
+    DELETE Usuario_has_TareaGlobal, TareaGrupal_has_Usuario FROM Usuario_has_TareaGlobal INNER JOIN TareaGrupal_has_Usuario ON Usuario_has_TareaGlobal.Usuario_idUsuario = TareaGrupal_has_Usuario.usuario AND Usuario_has_TareaGlobal.TareaGlobal_idProyecto = TareaGrupal_has_Usuario.proyecto WHERE TareaGrupal_has_Usuario.usuario = idUsuario AND TareaGrupal_has_Usuario.proyecto = idTareaGlobal;
     SELECT ROW_COUNT() INTO @check_id;
-    
-    #Significa que el usuario no estaba asignado a ese proyecto.
-    IF @check_id = 0 THEN
-		RETURN 0;
+	IF @check_id = 0 THEN 
+		#Significa que el usuario no estaba asignado a esa Tarea Global. Devuelve un aviso de error (FALSE) y no continua con el programa.
+        RETURN 0;
 	END IF;
     
-    DELETE FROM teamtasker.TareaGrupal_has_Usuario WHERE TareaGrupal_has_Usuario.usuario = idUsuario AND TareaGrupal_has_Usuario.proyecto = idTareaGlobal;
-    #Consultar como eliminar las tareas unitarias sin poder iterar a través de los grupos.
-    RETURN 1;
+    DELETE TareaUnitaria FROM TareaUnitaria INNER JOIN TareaGrupal ON TareaUnitaria.grupo = TareaGrupal.idGrupo WHERE TareaUnitaria.usuario = idUsuario AND TareaGrupal.idProyecto = idTareaGlobal;
+    
+    SELECT ROW_COUNT() INTO @check_id;
+    IF @check_id != 0 THEN
+		RETURN 1;
+	END IF;
+    RETURN 0;
 END;
 
