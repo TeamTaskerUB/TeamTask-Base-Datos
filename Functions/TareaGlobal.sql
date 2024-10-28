@@ -79,3 +79,94 @@ BEGIN
     END IF;
     RETURN 1;
 END;
+
+DROP FUNCTION IF EXISTS teamtasker.set_admin_proyecto;
+DELIMITER //
+CREATE FUNCTION teamtasker.set_admin_proyecto (idTareaGlobal INT, idUsuario INT)
+RETURNS TINYINT
+BEGIN
+	DECLARE check_id INT;
+    SET @check_id = -1;
+    
+    #Se fija que los IDs ingresados sean válidos (números positivos.)
+    IF idTareaGlobal < 0 THEN
+		SIGNAL SQLSTATE '45000'
+			SET MESSAGE_TEXT = 'idTareaGlobal es un valor inválido. Ingrese un número mayor a 0.';
+    END IF;
+    
+    IF idUsuario < 0 THEN
+		SIGNAL SQLSTATE '45000'
+			SET MESSAGE_TEXT = 'idUsuario es un valor inválido. Ingrese un número mayor a 0.';
+    END IF;
+    
+    #Se verifica que exista el usuario con su ID.
+    SELECT Usuario.idUsuario INTO @check_id FROM teamtasker.Usuario WHERE Usuario.idUsuario = idUsuario;
+    IF @check_id = -1 THEN
+		SIGNAL SQLSTATE '45000'
+			SET MESSAGE_TEXT = 'idUsuario no pertenece al ID de un usuario en la base de datos.';
+    END IF;
+    SET @check_id = -1;
+    
+    #Se verifica que exista la tarea global con su ID.
+    SELECT TareaGlobal.idProyecto INTO @check_id FROM teamtasker.TareaGlobal WHERE TareaGlobal.idProyecto = idTareaGlobal;
+     IF @check_id = -1 THEN
+		SIGNAL SQLSTATE '45000'
+			SET MESSAGE_TEXT = 'idTareaGlobal no pertenece al ID de una tarea global en la base de datos.';
+    END IF;
+    SET @check_id = -1;
+    
+    UPDATE teamtasker.TareaGlobal SET TareaGlobal.admin_id = idUsuario WHERE TareaGlobal.idProyecto = idTareaGlobal;
+    RETURN 1;
+END;
+
+DROP FUNCTION IF EXISTS teamtasker.quit_tareaGlobal_usuario;
+DELIMITER //
+CREATE FUNCTION teamtasker.quit_tareaGlobal_usuario (idTareaGlobal INT, idUsuario INT)
+RETURNS TINYINT
+BEGIN
+	DECLARE check_id INT;
+    SET @check_id = -1;
+    
+    #Se fija que los IDs ingresados sean válidos (números positivos.)
+    IF idTareaGlobal < 0 THEN
+		SIGNAL SQLSTATE '45000'
+			SET MESSAGE_TEXT = 'idTareaGlobal es un valor inválido. Ingrese un número mayor a 0.';
+    END IF;
+    
+    IF idUsuario < 0 THEN
+		SIGNAL SQLSTATE '45000'
+			SET MESSAGE_TEXT = 'idUsuario es un valor inválido. Ingrese un número mayor a 0.';
+    END IF;
+    
+    #Se verifica que exista el usuario con su ID.
+    SELECT Usuario.idUsuario INTO @check_id FROM teamtasker.Usuario WHERE Usuario.idUsuario = idUsuario;
+    IF @check_id = -1 THEN
+		SIGNAL SQLSTATE '45000'
+			SET MESSAGE_TEXT = 'idUsuario no pertenece al ID de un usuario en la base de datos.';
+    END IF;
+    SET @check_id = -1;
+    
+    #Se verifica que exista la tarea global con su ID.
+    SELECT TareaGlobal.idProyecto INTO @check_id FROM teamtasker.TareaGlobal WHERE TareaGlobal.idProyecto = idTareaGlobal;
+     IF @check_id = -1 THEN
+		SIGNAL SQLSTATE '45000'
+			SET MESSAGE_TEXT = 'idTareaGlobal no pertenece al ID de una tarea global en la base de datos.';
+    END IF;
+    SET @check_id = -1;
+    
+    DELETE Usuario_has_TareaGlobal, TareaGrupal_has_Usuario FROM Usuario_has_TareaGlobal INNER JOIN TareaGrupal_has_Usuario ON Usuario_has_TareaGlobal.Usuario_idUsuario = TareaGrupal_has_Usuario.usuario AND Usuario_has_TareaGlobal.TareaGlobal_idProyecto = TareaGrupal_has_Usuario.proyecto WHERE TareaGrupal_has_Usuario.usuario = idUsuario AND TareaGrupal_has_Usuario.proyecto = idTareaGlobal;
+    SELECT ROW_COUNT() INTO @check_id;
+	IF @check_id = 0 THEN 
+		#Significa que el usuario no estaba asignado a esa Tarea Global. Devuelve un aviso de error (FALSE) y no continua con el programa.
+        RETURN 0;
+	END IF;
+    
+    DELETE TareaUnitaria FROM TareaUnitaria INNER JOIN TareaGrupal ON TareaUnitaria.grupo = TareaGrupal.idGrupo WHERE TareaUnitaria.usuario = idUsuario AND TareaGrupal.idProyecto = idTareaGlobal;
+    
+    SELECT ROW_COUNT() INTO @check_id;
+    IF @check_id != 0 THEN
+		RETURN 1;
+	END IF;
+    RETURN 0;
+END;
+
